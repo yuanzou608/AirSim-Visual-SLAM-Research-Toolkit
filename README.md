@@ -18,6 +18,7 @@ The toolkit is organized into four independent modules:
 Each module can be used independently or combined into a complete experimental workflow.
 
 ![Demo](docs/images/city.png)
+![Demo](docs/images/multimodule.png)
 ---
 
 # Repository Structure
