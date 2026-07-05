@@ -96,7 +96,6 @@ Typical sensor streams include:
 * Depth Camera
 * Semantic Segmentation Camera
 * Ground Truth Pose
-* IMU
 
 Additional sensors can be added through AirSim configuration.
 
@@ -126,30 +125,18 @@ This framework is suitable for:
 
 ## Future Improvements
 
-Planned features include:
-
-* Random trajectory generation
-* Dynamic obstacle avoidance
-* Multi-UAV support
-* ROS integration
-* Mission visualization
-* YAML-based mission configuration
-* Real-time trajectory monitoring
 
 ---
 
 ## Dependencies
 
-* Python 3.x
+* Python 3.10
 * Microsoft AirSim
 * NumPy
 * OpenCV
 * msgpack-rpc-python
 
-Additional dependencies may be required depending on the experiment setup.
-
 ---
 
 ## License
 
-This project is released under the MIT License.

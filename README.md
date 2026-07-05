@@ -163,18 +163,6 @@ This project can be used for:
 
 # Future Work
 
-Planned improvements include:
-
-* ROS2 integration
-* Random trajectory generation
-* Multi-UAV support
-* Dynamic obstacle scenarios
-* YAML-based mission configuration
-* Additional SLAM backends
-* Automated benchmark reporting
-
 ---
 
 # License
-
-Released under the MIT License.
