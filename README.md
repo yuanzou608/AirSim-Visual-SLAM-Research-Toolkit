@@ -19,6 +19,7 @@ Each module can be used independently or combined into a complete experimental w
 
 ![Demo](docs/images/city.png)
 ![Demo](docs/images/multimodule.png)
+![Demo](docs/images/details.png)
 ---
 
 # Repository Structure
