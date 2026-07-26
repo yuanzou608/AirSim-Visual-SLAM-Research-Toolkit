@@ -1,0 +1,46 @@
+{
+  "tree":  {
+    "classID": 1,
+    "objectNames": ["tree", "birch", "fir", "oak"]
+  },
+  "bush":  {
+      "classID": 2,
+      "objectNames": ["hedge"]
+  },
+  "car":  {
+      "classID": 3,
+      "objectNames": ["car"]
+  },
+  "fence":  {
+      "classID": 4,
+      "objectNames": ["fence"]
+  },
+  "furniture":  {
+      "classID": 5,
+      "objectNames": ["bench", "chair", "Garden_Chair", "small_table"]
+  },
+  "power":  {
+      "classID": 6,
+      "objectNames": ["Power"]
+  },
+  "sign":  {
+    "classID": 7,
+    "objectNames": ["Street_Sign", "Stop_Sign"]
+  },
+  "Cone":  {
+    "classID": 8,
+    "objectNames": ["Cone"]
+  },
+  "Cube":  {
+    "classID": 9,
+    "objectNames": ["Cube"]
+  },
+  "Cylinder":  {
+    "classID": 10,
+    "objectNames": ["Cylinder"]
+  },
+  "Sphere":  {
+    "classID": 11,
+    "objectNames": ["Sphere"]
+  }
+}
