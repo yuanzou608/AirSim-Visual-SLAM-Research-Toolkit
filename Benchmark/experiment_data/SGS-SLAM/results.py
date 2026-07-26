@@ -165,7 +165,7 @@ if __name__ == "__main__":
     base = "/home/yuan/data2tb/experiments/SGS-SLAM/experiments/Airsim_semantic"
 
     # 输出 CSV 路径（可按需修改）
-    csv_path = os.path.join("/home/yuan/SLAM/ros2humble/paper/experiment_data/SGS-SLAM", "rgbd_metrics.csv")
+    csv_path = os.path.join("/home/yuan/SLAM/AirSim-Visual-SLAM-Research-Toolkit/Benchmark/experiment_data/SGS-SLAM", "semantic_metrics.csv")
 
     header = [
         "dataset",          # eg. road25fps_1

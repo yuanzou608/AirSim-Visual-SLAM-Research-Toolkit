@@ -30,6 +30,8 @@ ALGO_TYPE_MAP = {
     "MongGS": "3DGS",
     "SplaTAM": "3DGS",
     "hierslam": "3DGS",
+
+    "SGS-SLAM": "Semantic-enhanced"
 }
 
 METRIC_MAP = {
@@ -51,7 +53,7 @@ COLUMNS = [
 
 
 def load_scene_csv(csv_path, algorithm_label, algo_type):
-    """加载 csv 并转换成 summary_metrics_with_mono 一行行结构"""
+    """加载 csv 并转换成 summary_metrics_with_rgbd 一行行结构"""
     df = pd.read_csv(csv_path)
     df["scene"] = df["scene"].str.lower().str.strip()
 
@@ -106,21 +108,20 @@ def load_scene_csv(csv_path, algorithm_label, algo_type):
 def main():
     all_rows = []
     processed = []
-
     for algo in sorted(os.listdir(ROOT)):
         algo_dir = os.path.join(ROOT, algo)
         if not os.path.isdir(algo_dir):
             continue
 
         # 普通算法：summary_metrics_by_scene_mono.csv
-        mono_csv = os.path.join(algo_dir, "summary_metrics_by_scene_rgbd.csv")
+        rgbd_csv = os.path.join(algo_dir, "summary_metrics_by_scene_rgbd.csv")
 
 
         algo_type = ALGO_TYPE_MAP.get(algo, "")
 
         # 处理普通算法
-        if os.path.exists(mono_csv):
-            all_rows += load_scene_csv(mono_csv, algo, algo_type)
+        if os.path.exists(rgbd_csv):
+            all_rows += load_scene_csv(rgbd_csv, algo, algo_type)
             processed.append(algo)
             continue
 
