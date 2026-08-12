@@ -13,8 +13,9 @@ SCENES = ["building", "houses", "pool", "road", "roundabout"]
 ALGO_TYPE_MAP = {
     "ORB-SLAM2": "Traditional",
     "ORB-SLAM3": "Traditional",
-    "SVO": "Traditional",
+    "ElasticFusion": "Traditional",
     "DSO": "Traditional",
+    "SVO": "Traditional",
 
     "DROID-SLAM": "Learning-based",
     "DPVO": "Learning-based",
@@ -27,9 +28,10 @@ ALGO_TYPE_MAP = {
 
     "Photo-slam": "3DGS",
     "MongGS": "3DGS",
-    "ElasticFusion": "3DGS",
     "SplaTAM": "3DGS",
     "hierslam": "3DGS",
+
+    "sgs-slam": "semantic-enhanced",
 }
 
 METRIC_MAP = {
@@ -113,11 +115,8 @@ def main():
             continue
 
         # 普通算法：summary_metrics_by_scene_mono.csv
-        mono_csv = os.path.join(algo_dir, "summary_metrics_by_scene_mono.csv")
+        mono_csv = os.path.join(algo_dir, "summary_metrics_by_scene_rgbd.csv")
 
-        # MASt3R-SLAM 特殊两个 CSV
-        calib_csv = os.path.join(algo_dir, "summary_metrics_by_scene_calib.csv")
-        nocalib_csv = os.path.join(algo_dir, "summary_metrics_by_scene_nocalib.csv")
 
         algo_type = ALGO_TYPE_MAP.get(algo, "")
 
@@ -127,18 +126,6 @@ def main():
             processed.append(algo)
             continue
 
-        # 处理 MASt3R-SLAM calib
-        if algo == "MASt3R-SLAM":
-            if os.path.exists(calib_csv):
-                label = "MASt3R-SLAM (calib)"
-                all_rows += load_scene_csv(calib_csv, label, algo_type)
-                processed.append(label)
-
-            if os.path.exists(nocalib_csv):
-                label = "MASt3R-SLAM (nocalib)"
-                all_rows += load_scene_csv(nocalib_csv, label, algo_type)
-                processed.append(label)
-
     df = pd.DataFrame(all_rows, columns=COLUMNS)
 
     # 数字保留三位小数
@@ -147,7 +134,7 @@ def main():
             lambda x: f"{x:.3f}" if isinstance(x, (int, float, np.floating)) and not np.isnan(x) else ""
         )
 
-    out_csv = os.path.join(ROOT, "summary_metrics_with_mono.csv")
+    out_csv = os.path.join(ROOT, "summary_metrics_with_rgbd.csv")
     df.to_csv(out_csv, index=False, encoding="utf-8-sig")
 
     print("处理了以下算法：")
