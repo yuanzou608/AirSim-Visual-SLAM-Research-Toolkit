@@ -35,7 +35,7 @@ TOPIC_DEPTH   = "/viaduct/Sim/SceneDroneSensors/robots/Drone1/sensors/front_cent
 TOPIC_SEM     = "/viaduct/Sim/SceneDroneSensors/robots/Drone1/sensors/front_center1/segmentation_camera/image"
 TOPIC_GT_POSE = "/viaduct/Sim/SceneDroneSensors/robots/Drone1/sensors/front_center1/scene_camera/pose"
 
-SAVE_DIR = "/home/yuan/dataset/my_data"   # 修改为你想保存的绝对路径
+SAVE_DIR = "/home/yuan/data2tb/dataset/temp_data"   # 修改为你想保存的绝对路径
 PRINT_EVERY_SEC = 1.0            # 状态打印间隔（秒）
 
 # 同步器参数
