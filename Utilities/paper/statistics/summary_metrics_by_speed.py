@@ -230,7 +230,7 @@ def discover_metric_files(method_dir: Path) -> list[tuple[Path, str]]:
     # --------------------------------------------------
     # MASt3R-SLAM special case
     # --------------------------------------------------
-    if method_name == "mastr3-slam":
+    if method_name == "mast3r-slam":
         calib = method_dir / "calib_metrics.csv"
         nocalib = method_dir / "nocalib_metrics.csv"
 
