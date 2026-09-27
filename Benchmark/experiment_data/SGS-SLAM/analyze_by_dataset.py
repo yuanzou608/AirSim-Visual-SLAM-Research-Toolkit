@@ -60,7 +60,7 @@ def main():
     if len(sys.argv) > 1:
         csv_path = sys.argv[1]
     else:
-        csv_path = "semantic_metrics.csv"
+        csv_path = "rgbd_metrics.csv"
 
     # 场景 → metric → list of float
     values = {
@@ -118,7 +118,7 @@ def main():
                             values[real_scene][m].append(v)
 
     # 写 summary 文件
-    out_csv = "summary_metrics_by_scene_semantic.csv"
+    out_csv = "summary_metrics_by_scene_rgbd.csv"
     with open(out_csv, "w", newline="") as f:
         writer = csv.writer(f)
         header = ["scene", "SR"]

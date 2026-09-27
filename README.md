@@ -1,6 +1,6 @@
 # AirSim Visual SLAM Research Toolkit
 
-A modular toolkit for autonomous UAV flight, multimodal dataset collection, Visual SLAM benchmarking, and experiment automation in Microsoft AirSim.
+A toolkit for autonomous UAV flight, multimodal dataset collection, and Visual SLAM benchmarking. The current collection and flight-control workflow uses **ADK5.6.2**.
 
 This project was developed as part of my Master's research on **Visual SLAM for UAV applications**, providing an end-to-end pipeline from autonomous flight execution to dataset generation and SLAM evaluation.
 
@@ -8,14 +8,15 @@ This project was developed as part of my Master's research on **Visual SLAM for 
 
 ## Overview
 
-The toolkit is organized into four independent modules:
+The toolkit separates these responsibilities:
 
-* **AirSim Flight Automation** – Autonomous UAV flight and mission execution.
-* **AirSim Dataset Collection** – Automated multimodal sensor data acquisition.
-* **AirSim Benchmark** – Visual SLAM evaluation and performance analysis.
-* **AirSim Utilities** – Shared tools for data processing, visualization, and experiment management.
+* **FlightAutomation** – ADK flight control and route execution.
+* **FlightDataCollection** – Current ADK sensor recording and collection helpers.
+* **Benchmark** – Evaluation, metrics, statistics, conversions, and evaluation plots.
+* **Utilities** – Reusable basic tools; module-specific scripts are being relocated in small batches.
+* **Paper** – Paper materials and figures. Evaluation plotting programs belong in Benchmark.
 
-Each module can be used independently or combined into a complete experimental workflow.
+The paper uses ADK data exclusively. Older AirSim SDK collection and flight-control programs are retained pending separate archival under `legacy/airsim/`; they are not current entry points. Names and ROS topics containing `airsim` can still be used by ADK and do not identify a program or dataset as obsolete. Existing CSVs, PNGs, and embedded numeric tables have not all been source-verified.
 
 ![Demo](docs/images/city.png)
 ![Demo](docs/images/multimodule.png)
@@ -25,20 +26,22 @@ Each module can be used independently or combined into a complete experimental w
 # Repository Structure
 
 ```text
-AirSim-VisualSLAM-Toolkit/
-│
+AirSim-Visual-SLAM-Research-Toolkit/
 ├── FlightAutomation/
-│   ├── trajectories/
+│   ├── Trajectories/ADK5.6.2/
+│   ├── Trajectories/OldVersion/  # historical SDK code, archival pending
 │   └── README.md
-│
-├── DatasetCollection/
-│
+├── FlightDataCollection/
+│   ├── ros2_image_pose_recorder.py
+│   └── camera_view.py
 ├── Benchmark/
-│
+│   ├── experiment_data/
+│   ├── statistics/
+│   ├── visualization/
+│   └── convert_tum.py
 ├── Utilities/
-│
-├── docs/
-|   |── images/
+├── Paper/
+├── docs/images/
 └── README.md
 ```
 
@@ -48,7 +51,7 @@ AirSim-VisualSLAM-Toolkit/
 
 ## Flight Automation
 
-Provides autonomous UAV mission execution inside AirSim.
+Current routes are under `FlightAutomation/Trajectories/ADK5.6.2/` and use the ROS2 `adk_node` interfaces. See [flight-control instructions](FlightAutomation/README.md).
 
 ### Features
 
@@ -63,7 +66,16 @@ Provides autonomous UAV mission execution inside AirSim.
 
 ## Dataset Collection
 
-Provides automated data acquisition for UAV perception research.
+The maintained recorder is `FlightDataCollection/ros2_image_pose_recorder.py`. It subscribes to RGB, depth, semantic images, and ground-truth pose; depth is saved as uint16 millimeter PNGs. Configure its existing topic and save-directory constants for the current ADK deployment before starting it.
+
+From the repository root, in the configured ADK ROS2 environment:
+
+```bash
+python3 FlightDataCollection/ros2_image_pose_recorder.py
+python3 FlightDataCollection/camera_view.py
+```
+
+Run the viewer separately from the recorder. The viewer retains the active ADK version's default `mode = 'rgb'`; its existing `depth` mode decodes `32FC1` and displays 0.5–50 meters as uint8 grayscale. This display conversion does not change the recorder's saved depth format or units. The unused Utilities viewer and older AirSim publisher are not current entry points.
 
 ### Supported Data
 
@@ -71,7 +83,6 @@ Provides automated data acquisition for UAV perception research.
 * Depth images
 * Semantic segmentation
 * Ground truth pose
-* IMU measurements
 
 ### Features
 
@@ -95,11 +106,38 @@ Provides a unified evaluation pipeline for Visual SLAM algorithms.
 
 Designed to simplify comparisons between different Visual SLAM methods under identical flight conditions.
 
+### Preserved ATE/MTP figures
+
+The two programs below reproduce the existing embedded ATE/MTP tables. Their numeric provenance has not been verified; these commands do not incorporate those values into current paper statistics. They preserve the values, metric calculations, filenames, and layout. Select an explicit output directory rather than writing into paper materials implicitly:
+
+```bash
+python3 Benchmark/visualization/ATE_MTP_heat_map.py \
+  --output-dir /tmp/toolkit-evaluation-figures
+python3 Benchmark/visualization/combine_ATE_MTP_images.py \
+  --input-dir /tmp/toolkit-evaluation-figures \
+  --output /tmp/toolkit-evaluation-figures/Combined_3_Heatmaps.png
+```
+
+Use `MPLBACKEND=Agg` for headless plotting. The first command writes five heatmaps; the second combines the mono ATE, RGB-D ATE, and combined MTP images. Runtime dependencies are NumPy, pandas, Matplotlib, and Pillow.
+
+### Ground-truth index conversion
+
+`Benchmark/convert_tum.py` replaces the timestamp column with indices starting at 1.0 and increasing by 0.1, preserving the existing eight-column filtering and six-decimal formatting. It requires explicit input paths; it does not run the former hardcoded dataset directory automatically.
+
+```bash
+python3 Benchmark/convert_tum.py \
+  --input /path/to/groundtruth.txt --output /path/to/groundtruth_index.txt
+python3 Benchmark/convert_tum.py \
+  --dataset-root /path/to/datasets --datasets building25fps road25fps
+```
+
+Batch mode reads `DATASET/groundtruth.txt` and writes `DATASET/groundtruth_index.txt`. Omitting `--datasets` uses the preserved original sequence list. The existing DSO, TartanVO, and VGGT-LONG evaluation readers retain their run-directory input paths; this converter does not deploy files into those runs.
+
 ---
 
 ## Utilities
 
-Contains reusable tools shared across the project.
+Intended for reusable basic tools shared across modules. Collection-specific helpers belong with the current collection workflow or the historical SDK archive, and benchmark-only analysis and plotting belong in Benchmark. Remaining candidates are being reviewed by implementation and usage rather than by filename.
 
 Examples include:
 
