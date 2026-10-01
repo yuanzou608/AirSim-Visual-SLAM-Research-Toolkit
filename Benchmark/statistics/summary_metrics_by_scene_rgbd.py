@@ -114,8 +114,10 @@ def main():
         if not os.path.isdir(algo_dir):
             continue
 
-        # 普通算法：summary_metrics_by_scene_mono.csv
-        mono_csv = os.path.join(algo_dir, "summary_metrics_by_scene_rgbd.csv")
+        # SGS-SLAM 使用语义场景汇总；其它方法保留原 RGBD 路由。
+        scene_filename = ("summary_metrics_by_scene_semantic.csv"
+                          if algo == "SGS-SLAM" else "summary_metrics_by_scene_rgbd.csv")
+        mono_csv = os.path.join(algo_dir, scene_filename)
 
 
         algo_type = ALGO_TYPE_MAP.get(algo, "")
