@@ -82,7 +82,7 @@ if __name__ == "__main__":
     dataset_list = [
         "building25fps",
         "cross_building_high_high",
-        # "cross_building_high_low",
+        "cross_building_high_low",
         "cross_building_high_medium",
         "cross_building_low_high",
         "cross_building_low_low",
@@ -116,41 +116,69 @@ if __name__ == "__main__":
         "road2_low_low",
         "road2_low_medium",
         "road2_medium_high",
-        # "road2_medium_low",
+        "road2_medium_low",
         "road2_medium_medium",
         "roundabout25fps",
         "roundabout2_high_high",
-        # "roundabout2_high_low",
+        "roundabout2_high_low",
         "roundabout2_high_medium",
         "roundabout2_low_high",
         "roundabout2_low_low",
         "roundabout2_low_medium",
         "roundabout2_medium_high",
         "roundabout2_medium_low",
-        "roundabout_square25fps",
-        # "testdata"
+        "roundabout_square25fps"
     ]
 
-    root = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic"
+    root = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic"
 
-    for dataset in dataset_list:
-        for i in ["4"]:
-            source = os.path.join(root, dataset, str(i), "estimate.txt")
-            target = os.path.join(root, dataset, str(i), "estimate_tum.txt")
-            convert_camera_poses_to_tum(
-                input_path=source,
-                output_path=target,
-                start_ts=0.0,
-                delta=1.0,
-            )
+    missing_records = []
+    failed_conversions = []
 
+    # 逐个 trial 处理 estimate.txt 和 groundtruth.txt。
+    # 某个文件不存在时不报错退出，而是记录下来，最后统一报告。
     for dataset in dataset_list:
-        for i in ["4"]:
-            source = os.path.join(root, dataset, str(i), "groundtruth.txt")
-            target = os.path.join(root, dataset, str(i), "groundtruth_tum.txt")
-            convert_camera_poses_to_tum(
-                input_path=source,
-                output_path=target,
-                start_ts=0.0,
-                delta=1.0,
-            )
+        for i in ["1", "2", "3"]:
+            trial_dir = os.path.join(root, dataset, "complete", str(i))
+
+            for filename in ["estimate.txt", "groundtruth.txt"]:
+                source = os.path.join(trial_dir, filename)
+                target_name = filename.replace(".txt", "_tum.txt")
+                target = os.path.join(trial_dir, target_name)
+
+                if not os.path.isfile(source):
+                    missing_records.append((trial_dir, filename))
+                    print(f"[MISSING] {source}")
+                    continue
+
+                try:
+                    convert_camera_poses_to_tum(
+                        input_path=source,
+                        output_path=target,
+                        start_ts=0.0,
+                        delta=1.0,
+                    )
+                except Exception as e:
+                    # 即使某个已有文件内容损坏，也不中断整个批处理。
+                    failed_conversions.append((source, str(e)))
+                    print(f"[ERROR] {source}: {e}")
+
+    print("\n" + "=" * 80)
+    print("Conversion summary")
+    print("=" * 80)
+
+    if missing_records:
+        print(f"\nMissing input files: {len(missing_records)}")
+        for trial_dir, filename in missing_records:
+            rel_dir = os.path.relpath(trial_dir, root)
+            print(f"  - {rel_dir}: missing {filename}")
+    else:
+        print("\nMissing input files: 0")
+
+    if failed_conversions:
+        print(f"\nConversion errors: {len(failed_conversions)}")
+        for source, error in failed_conversions:
+            rel_source = os.path.relpath(source, root)
+            print(f"  - {rel_source}: {error}")
+    else:
+        print("\nConversion errors: 0")
