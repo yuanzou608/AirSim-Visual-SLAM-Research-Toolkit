@@ -4,7 +4,7 @@ import argparse
 import re
 import shutil
 
-ROOT = Path("/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic")
+ROOT = Path("/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic")
 
 
 def reorganize_dataset(dataset_dir: Path, dry_run: bool = False) -> None:

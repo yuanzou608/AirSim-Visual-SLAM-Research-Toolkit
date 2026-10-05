@@ -130,7 +130,8 @@ if __name__ == "__main__":
         "roundabout_square25fps"
     ]
 
-    root = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic"
+    root = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic" # for no semantic dataset
+    # root = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic"  # for semantic dataset
 
     missing_records = []
     failed_conversions = []
