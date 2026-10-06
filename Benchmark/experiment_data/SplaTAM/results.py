@@ -147,7 +147,7 @@ if __name__ == "__main__":
     base = "/home/yuan/data2tb/experiments/SplaTAM/experiments/airsim"
 
     # 输出 CSV 路径（可按需修改）
-    csv_path = os.path.join(base, "rgbd_metrics.csv")
+    csv_path = os.path.join("rgbd_metrics.csv")
 
     header = [
         "dataset",          # eg. road25fps_1
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         writer.writerow(header)
 
         for dataset in dataset_list:
-            for run_id in ["1", "2"]:
+            for run_id in ["1", "2", "3"]:
                 dataset_name = f"{dataset}_{run_id}"
 
                 # gt = f"{base}/{dataset}/mono/{run_id}/groundtruth.txt"

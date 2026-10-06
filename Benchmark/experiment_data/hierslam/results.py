@@ -144,11 +144,12 @@ if __name__ == "__main__":
         "roundabout_square25fps",
         # "testdata"
     ]
-    base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic"
+    # base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic" # no semantic dataset
+    base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic" # semantic dataset
 
     # 输出 CSV 路径（可按需修改）
-    # csv_path = os.path.join("semantic_metrics_500frames.csv") # semantic dataset
-    csv_path = os.path.join("rgbd_metrics_500frames.csv") # rgbd dataset
+    csv_path = os.path.join("semantic_metrics_500frames.csv") # semantic dataset
+    # csv_path = os.path.join("rgbd_metrics_500frames.csv") # rgbd dataset
 
     header = [
         "dataset",          # eg. road25fps_1
@@ -169,14 +170,14 @@ if __name__ == "__main__":
         writer.writerow(header)
 
         for dataset in dataset_list:
-            for run_id in ["4"]:
+            for run_id in ["4", "5", "6"]:
                 dataset_name = f"{dataset}_{run_id}"
 
-                gt = f"{base}/{dataset}/{run_id}/groundtruth_tum.txt"
-                est = f"{base}/{dataset}/{run_id}/estimate_tum.txt"
-                # ATE_RMSE_path = f"{base}/{dataset}/{run_id}/eval/ATE.txt"
-                runtime_path = f"{base}/{dataset}/{run_id}/metric.txt"
-                gpu_path = f"{base}/{dataset}/{run_id}/metric.txt"
+                gt = f"{base}/{dataset}/500frames/{run_id}/groundtruth_tum.txt"
+                est = f"{base}/{dataset}/500frames/{run_id}/estimate_tum.txt"
+                # ATE_RMSE_path = f"{base}/{dataset}/500frames/{run_id}/eval/ATE.txt"
+                runtime_path = f"{base}/{dataset}/500frames/{run_id}/metric.txt"
+                gpu_path = f"{base}/{dataset}/500frames/{run_id}/metric.txt"
                 # print(gt, est, runtime_path, gpu_path)
 
                 # rmse_v = parse_ATE(ATE_RMSE_path)

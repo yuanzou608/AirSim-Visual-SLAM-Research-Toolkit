@@ -2,7 +2,7 @@
 from pathlib import Path
 import shutil
 
-ROOT = Path("/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic")
+ROOT = Path("/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic")
 
 
 def main():

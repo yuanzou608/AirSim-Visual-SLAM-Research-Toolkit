@@ -3,11 +3,11 @@ from pathlib import Path
 import shutil
 
 SOURCE_ROOT = Path(
-    "/home/yuan/SLAM/Hier-SLAM/Hier-SLAM/experiments/Airsim_no_semantic"
+    "/home/yuan/SLAM/Hier-SLAM/Hier-SLAM/experiments/Airsim_semantic"
 )
 
 TARGET_ROOT = Path(
-    "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic"
+    "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic"
 )
 
 
