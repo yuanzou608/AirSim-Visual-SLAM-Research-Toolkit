@@ -144,12 +144,12 @@ if __name__ == "__main__":
         "roundabout_square25fps",
         # "testdata"
     ]
-    # base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic" # no semantic dataset
-    base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic" # semantic dataset
+    base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_no_semantic" # no semantic dataset
+    # base = "/home/yuan/data2tb/experiments/hierslam/experiments/Airsim_semantic" # semantic dataset
 
     # 输出 CSV 路径（可按需修改）
-    csv_path = os.path.join("semantic_metrics_500frames.csv") # semantic dataset
-    # csv_path = os.path.join("rgbd_metrics_500frames.csv") # rgbd dataset
+    # csv_path = os.path.join("semantic_metrics_500frames.csv") # semantic dataset
+    csv_path = os.path.join("rgbd_metrics_500frames.csv") # rgbd dataset
 
     header = [
         "dataset",          # eg. road25fps_1

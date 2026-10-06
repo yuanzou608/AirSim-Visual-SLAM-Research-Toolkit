@@ -139,8 +139,8 @@ if __name__ == "__main__":
     # 逐个 trial 处理 estimate.txt 和 groundtruth.txt。
     # 某个文件不存在时不报错退出，而是记录下来，最后统一报告。
     for dataset in dataset_list:
-        for i in ["1", "2", "3"]:
-            trial_dir = os.path.join(root, dataset, "complete", str(i))
+        for i in ["4", "5", "6"]:
+            trial_dir = os.path.join(root, dataset, "500frames", str(i))
 
             for filename in ["estimate.txt", "groundtruth.txt"]:
                 source = os.path.join(trial_dir, filename)
