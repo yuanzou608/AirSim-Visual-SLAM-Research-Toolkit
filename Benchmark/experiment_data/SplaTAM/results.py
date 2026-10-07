@@ -154,13 +154,13 @@ if __name__ == "__main__":
         "FPS",              # FPS_wall_clock
         "runtime",          # TotalWallClockTime_s
         "PeakReservedGB",   # peak reserved in GB
-        # "max",
-        # "min",
-        # "mean",
-        # "median",
+        "max",
+        "min",
+        "mean",
+        "median",
         "rmse",
-        # "sse",
-        # "std",
+        "sse",
+        "std",
     ]
 
     with open(csv_path, "w", newline="") as csvfile:
@@ -171,40 +171,41 @@ if __name__ == "__main__":
             for run_id in ["1", "2", "3"]:
                 dataset_name = f"{dataset}_{run_id}"
 
-                # gt = f"{base}/{dataset}/mono/{run_id}/groundtruth.txt"
-                # est = f"{base}/{dataset}/mono/{run_id}/FrameTrajectory.txt"
-                ATE_RMSE_path = f"{base}/{dataset}/{run_id}/eval/ATE.txt"
+                gt = f"{base}/{dataset}/{run_id}/poses/groundtruth.txt"
+                est = f"{base}/{dataset}/{run_id}/poses/est_c2w_tum.txt"
+                # ATE_RMSE_path = f"{base}/{dataset}/{run_id}/eval/ATE.txt"
                 runtime_path = f"{base}/{dataset}/{run_id}/metric.txt"
                 gpu_path = f"{base}/{dataset}/{run_id}/metric.txt"
                 # print(gt, est, runtime_path, gpu_path)
 
-                rmse_v = parse_ATE(ATE_RMSE_path)
+                # rmse_v = parse_ATE(ATE_RMSE_path)
                 fps, wall_clock = parse_runtime_file(runtime_path)
                 peak_gb = parse_gpu_file(gpu_path)
 
-                # if ate_stats == "NA":
-                #     max_v = min_v = mean_v = median_v = rmse_v = sse_v = std_v = "NA"
-                # else:
-                #     max_v   = ate_stats["max"]
-                #     min_v   = ate_stats["min"]
-                #     mean_v  = ate_stats["mean"]
-                #     median_v = ate_stats["median"]
-                #     rmse_v  = ate_stats["rmse"]
-                #     sse_v   = ate_stats["sse"]
-                #     std_v   = ate_stats["std"]
+                ate_stats = evaluate_ate_stats_like_cli(gt, est)
+                if ate_stats == "NA":
+                    max_v = min_v = mean_v = median_v = rmse_v = sse_v = std_v = "NA"
+                else:
+                    max_v   = ate_stats["max"]
+                    min_v   = ate_stats["min"]
+                    mean_v  = ate_stats["mean"]
+                    median_v = ate_stats["median"]
+                    rmse_v  = ate_stats["rmse"]
+                    sse_v   = ate_stats["sse"]
+                    std_v   = ate_stats["std"]
 
                 row = [
                     dataset_name,
                     fps,
                     wall_clock,
                     peak_gb,
-                    # max_v,
-                    # min_v,
-                    # mean_v,
-                    # median_v,
+                    max_v,
+                    min_v,
+                    mean_v,
+                    median_v,
                     rmse_v,
-                    # sse_v,
-                    # std_v,
+                    sse_v,
+                    std_v,
                 ]
                 writer.writerow(row)
 

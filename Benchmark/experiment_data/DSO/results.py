@@ -84,7 +84,7 @@ if __name__ == "__main__":
         "cross_building_low_low",
         "cross_building_low_medium",
         "cross_building_medium_high",
-        # "cross_building_medium_low",
+        "cross_building_medium_low",
         "cross_building_medium_medium",
         "houses_high_high",
         "houses_high_low",
@@ -108,8 +108,8 @@ if __name__ == "__main__":
         "road2_high_high",
         "road2_high_low",
         "road2_high_medium",
-        # "road2_low_high",
-        # "road2_low_low",
+        "road2_low_high",
+        "road2_low_low",
         "road2_low_medium",
         "road2_medium_high",
         "road2_medium_low",
@@ -119,8 +119,8 @@ if __name__ == "__main__":
         "roundabout2_high_low",
         "roundabout2_high_medium",
         "roundabout2_low_high",
-        # "roundabout2_low_low",
-        # "roundabout2_low_medium",
+        "roundabout2_low_low",
+        "roundabout2_low_medium",
         "roundabout2_medium_high",
         "roundabout2_medium_low",
         "roundabout_square25fps",
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     base = "/home/yuan/data2tb/experiments/DSO/experiments/airsim"
 
     # 输出 CSV 路径（可按需修改）
-    csv_path = os.path.join(base, "rgbd_metrics.csv")
+    csv_path = os.path.join("mono_metrics.csv")
 
     header = [
         "dataset",          # eg. road25fps_1
