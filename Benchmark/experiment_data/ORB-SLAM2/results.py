@@ -1,3 +1,10 @@
+# Audited memory only. For all modes without recomputing ATE, use
+# Benchmark/experiment_data/normalize_memory_csvs.py (dry-run by default).
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from memory_gib import parse_peak_reserved_gib
+
 from evo.tools import file_interface
 from evo.core import sync
 from evo.core.metrics import PoseRelation, APE
@@ -57,15 +64,9 @@ def parse_runtime_file(path):
     return fps, wall_clock
 
 def parse_gpu_file(path):
-    if not os.path.exists(path):
-        return "NA", "NA"
-    peak_reserved_mb = None
-    with open(path, "r") as f:
-        for line in f:
-            if "memory" in line:
-                peak_reserved_mb = float(line.split()[1].strip())
-    peak_reserved_gb = peak_reserved_mb / 1024.0 if peak_reserved_mb is not None else None
-    return peak_reserved_mb, peak_reserved_gb
+    # Legacy CSV column PeakReservedGB is peak_reserved in GiB only after audit.
+    # No allocated/device-used/RSS substitution; see ../memory_gib_audit.md.
+    return parse_peak_reserved_gib(path, 'ORB-SLAM2')
 
 
 
@@ -136,7 +137,7 @@ if __name__ == "__main__":
         "dataset",          # eg. road25fps_1
         "FPS",              # FPS_wall_clock
         "runtime",          # TotalWallClockTime_s
-        "PeakReservedGB",   # peak reserved in GB
+        "PeakReservedGB",   # legacy name; audited peak_reserved GiB; see memory_gib_metadata.json
         "max",
         "min",
         "mean",
@@ -162,7 +163,7 @@ if __name__ == "__main__":
 
                 ate_stats = evaluate_ate_stats_like_cli(gt, est)
                 fps, wall_clock = parse_runtime_file(runtime_path)
-                peak_mb, peak_gb = parse_gpu_file(gpu_path)
+                peak_gb = parse_gpu_file(gpu_path)
 
                 if ate_stats == "NA":
                     max_v = min_v = mean_v = median_v = rmse_v = sse_v = std_v = "NA"
