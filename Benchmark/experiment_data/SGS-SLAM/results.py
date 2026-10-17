@@ -11,57 +11,57 @@ from evo.core.metrics import PoseRelation, APE
 import os
 import csv
 
-# def evaluate_ate_stats_like_cli(gt_file, est_file):
-#     if not (os.path.exists(gt_file) and os.path.exists(est_file)):
-#         return "NA"
-#     try:
-#         # 1. 读取 TUM 轨迹
-#         gt_traj = file_interface.read_tum_trajectory_file(gt_file)
+def evaluate_ate_stats_like_cli(gt_file, est_file):
+    if not (os.path.exists(gt_file) and os.path.exists(est_file)):
+        return "NA"
+    try:
+        # 1. 读取 TUM 轨迹
+        gt_traj = file_interface.read_tum_trajectory_file(gt_file)
 
-#         est_traj = file_interface.read_tum_trajectory_file(est_file)
-
-
-#         # 2. 时间同步：和 evo_ape 默认一样，用 max_diff = 0.01
-#         gt_sync, est_sync = sync.associate_trajectories(
-#             gt_traj, est_traj, max_diff=0.00
-#         )
+        est_traj = file_interface.read_tum_trajectory_file(est_file)
 
 
-#         # 3. 先对齐：Umeyama + 尺度校正（Sim(3)）
-#         #   对齐的是 "估计轨迹 est_sync" 到 "gt_sync"
-#         est_sync.align(
-#             gt_sync,
-#             correct_scale=True,        # 等价于命令行的 --correct_scale
-#             correct_only_scale=False   # 同时做旋转+平移+尺度
-#         )
+        # 2. 时间同步：和 evo_ape 默认一样，用 max_diff = 0.01
+        gt_sync, est_sync = sync.associate_trajectories(
+            gt_traj, est_traj, max_diff=0.00
+        )
 
-#         # 4. 计算 APE w.r.t translation part —— 实际就是 ATE
-#         ape_metric = APE(PoseRelation.translation_part)
-#         ape_metric.process_data((gt_sync, est_sync))
 
-#         stats = ape_metric.get_all_statistics()  # dict
+        # 3. 先对齐：Umeyama + 尺度校正（Sim(3)）
+        #   对齐的是 "估计轨迹 est_sync" 到 "gt_sync"
+        est_sync.align(
+            gt_sync,
+            correct_scale=True,        # 等价于命令行的 --correct_scale
+            correct_only_scale=False   # 同时做旋转+平移+尺度
+        )
 
-#         results = {
-#             "max":   float(stats["max"]),
-#             "min":   float(stats["min"]),
-#             "mean":  float(stats["mean"]),
-#             "median": float(stats["median"]),
-#             "rmse":  float(stats["rmse"]),  # 论文里一般叫 ATE RMSE
-#             "sse":   float(stats["sse"]),
-#             "std":   float(stats["std"]),
-#         }
-#         return results
-#     except Exception as e:
-#         results = {
-#             "max": "NA",
-#             "min": "NA",
-#             "mean": "NA",
-#             "median": "NA",
-#             "rmse": "NA",  # 论文里一般叫 ATE RMSE
-#             "sse": "NA",
-#             "std": "NA",
-#         }
-#         return results
+        # 4. 计算 APE w.r.t translation part —— 实际就是 ATE
+        ape_metric = APE(PoseRelation.translation_part)
+        ape_metric.process_data((gt_sync, est_sync))
+
+        stats = ape_metric.get_all_statistics()  # dict
+
+        results = {
+            "max":   float(stats["max"]),
+            "min":   float(stats["min"]),
+            "mean":  float(stats["mean"]),
+            "median": float(stats["median"]),
+            "rmse":  float(stats["rmse"]),  # 论文里一般叫 ATE RMSE
+            "sse":   float(stats["sse"]),
+            "std":   float(stats["std"]),
+        }
+        return results
+    except Exception as e:
+        results = {
+            "max": "NA",
+            "min": "NA",
+            "mean": "NA",
+            "median": "NA",
+            "rmse": "NA",  # 论文里一般叫 ATE RMSE
+            "sse": "NA",
+            "std": "NA",
+        }
+        return results
 
 def parse_ATE(path):
     if not os.path.exists(path):
@@ -161,20 +161,20 @@ if __name__ == "__main__":
     base = "/home/yuan/data2tb/experiments/SGS-SLAM/experiments/Airsim_semantic"
 
     # 输出 CSV 路径（可按需修改）
-    csv_path = os.path.join("/home/yuan/SLAM/ros2humble/paper/experiment_data/SGS-SLAM", "rgbd_metrics.csv")
+    csv_path = os.path.join("semantic_metrics.csv")
 
     header = [
         "dataset",          # eg. road25fps_1
         "FPS",              # FPS_wall_clock
         "runtime",          # TotalWallClockTime_s
         "PeakReservedGB",   # legacy name; audited peak_reserved GiB; see memory_gib_metadata.json
-        # "max",
-        # "min",
-        # "mean",
-        # "median",
+        "max",
+        "min",
+        "mean",
+        "median",
         "rmse",
-        # "sse",
-        # "std",
+        "sse",
+        "std",
     ]
 
     with open(csv_path, "w", newline="") as csvfile:
@@ -182,43 +182,44 @@ if __name__ == "__main__":
         writer.writerow(header)
 
         for dataset in dataset_list:
-            for run_id in ["1", "2", "3"]:
+            for run_id in ["4", "5", "6"]: # 1,2,3 miss est file, 4,5,6 have est file
                 dataset_name = f"{dataset}_{run_id}"
 
-                # gt = f"{base}/{dataset}/mono/{run_id}/groundtruth.txt"
-                # est = f"{base}/{dataset}/mono/{run_id}/FrameTrajectory.txt"
-                ATE_RMSE_path = f"{base}/{dataset}/{run_id}/metrics.txt"
+                gt = f"{base}/{dataset}/{run_id}/poses/groundtruth.txt"
+                est = f"{base}/{dataset}/{run_id}/poses/estimate.txt"
+                ate_stats = evaluate_ate_stats_like_cli(gt, est)
+                # ATE_RMSE_path = f"{base}/{dataset}/{run_id}/metrics.txt"
                 runtime_path = f"{base}/{dataset}/{run_id}/metrics.txt"
                 gpu_path = f"{base}/{dataset}/{run_id}/metrics.txt"
                 # print(gt, est, runtime_path, gpu_path)
 
-                rmse_v = parse_ATE(ATE_RMSE_path)
+                # rmse_v = parse_ATE(ATE_RMSE_path)
                 fps, wall_clock = parse_runtime_file(runtime_path)
                 peak_gb = parse_gpu_file(gpu_path)
 
-                # if ate_stats == "NA":
-                #     max_v = min_v = mean_v = median_v = rmse_v = sse_v = std_v = "NA"
-                # else:
-                #     max_v   = ate_stats["max"]
-                #     min_v   = ate_stats["min"]
-                #     mean_v  = ate_stats["mean"]
-                #     median_v = ate_stats["median"]
-                #     rmse_v  = ate_stats["rmse"]
-                #     sse_v   = ate_stats["sse"]
-                #     std_v   = ate_stats["std"]
+                if ate_stats == "NA":
+                    max_v = min_v = mean_v = median_v = rmse_v = sse_v = std_v = "NA"
+                else:
+                    max_v   = ate_stats["max"]
+                    min_v   = ate_stats["min"]
+                    mean_v  = ate_stats["mean"]
+                    median_v = ate_stats["median"]
+                    rmse_v  = ate_stats["rmse"]
+                    sse_v   = ate_stats["sse"]
+                    std_v   = ate_stats["std"]
 
                 row = [
                     dataset_name,
                     fps,
                     wall_clock,
                     peak_gb,
-                    # max_v,
-                    # min_v,
-                    # mean_v,
-                    # median_v,
+                    max_v,
+                    min_v,
+                    mean_v,
+                    median_v,
                     rmse_v,
-                    # sse_v,
-                    # std_v,
+                    sse_v,
+                    std_v,
                 ]
                 writer.writerow(row)
 
