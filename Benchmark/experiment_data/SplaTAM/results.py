@@ -10,6 +10,8 @@ from evo.core import sync
 from evo.core.metrics import PoseRelation, APE
 import os
 import csv
+import json
+import math
 
 def evaluate_ate_stats_like_cli(gt_file, est_file):
     if not (os.path.exists(gt_file) and os.path.exists(est_file)):
@@ -91,6 +93,70 @@ def parse_gpu_file(path):
     return parse_peak_reserved_gib(path, 'SplaTAM')
 
 
+def _numeric_or_na(value):
+    """Parse a measured numeric value; never silently substitute another metric."""
+    try:
+        value = float(value)
+        return value if math.isfinite(value) else "NA"
+    except (TypeError, ValueError):
+        return "NA"
+
+
+def _read_new_metrics(metrics_path):
+    """Read SplaTAM v2 key:value metrics.txt (not the old metric.txt)."""
+    values = {}
+    with open(metrics_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if ":" not in line:
+                continue
+            key, value = line.split(":", 1)
+            values[key.strip()] = value.strip()
+    return values
+
+
+def parse_run_performance(run_dir):
+    """Return (SLAM FPS, SLAM runtime in seconds, peak reserved in GiB).
+
+    New runs: metrics.txt (fallback: performance.json); use ONLY
+      slam_fps, slam_runtime_sec, peak_reserved_gib.
+    Old runs: metric.txt, preserving the existing parsing and memory audit.
+
+    New values are already in GiB; do not divide them by 1024 again.
+    Do not replace missing peak_reserved_gib with peak_allocated_gib.
+    """
+    run_dir = Path(run_dir)
+    new_metrics = run_dir / "metrics.txt"
+    new_json = run_dir / "performance.json"
+    old_metrics = run_dir / "metric.txt"
+
+    if new_metrics.is_file():
+        values = _read_new_metrics(new_metrics)
+    elif new_json.is_file():
+        with open(new_json, "r", encoding="utf-8") as f:
+            values = json.load(f)
+        if not isinstance(values, dict):
+            raise ValueError(f"Expected JSON object in {new_json}")
+    elif old_metrics.is_file():
+        # Exactly the original 1/3 parsing path.
+        fps, runtime = parse_runtime_file(str(old_metrics))
+        peak = parse_gpu_file(str(old_metrics))
+        return fps, runtime, peak
+    else:
+        print(f"WARNING: no metrics file in {run_dir}")
+        return "NA", "NA", "NA"
+
+    fps = _numeric_or_na(values.get("slam_fps"))
+    runtime = _numeric_or_na(values.get("slam_runtime_sec"))
+    peak = _numeric_or_na(values.get("peak_reserved_gib"))
+    if values.get("memory_measurement_complete") in ("false", False):
+        # A run can finish without completing the peak-memory measurement.
+        peak = "NA"
+    if "NA" in (fps, runtime, peak):
+        print(f"WARNING: incomplete new metrics in {run_dir}: "
+              f"FPS={fps}, runtime={runtime}, peak_reserved_gib={peak}")
+    return fps, runtime, peak
+
+
 
 
 if __name__ == "__main__":
@@ -153,7 +219,7 @@ if __name__ == "__main__":
     header = [
         "dataset",          # eg. road25fps_1
         "FPS",              # FPS_wall_clock
-        "runtime",          # TotalWallClockTime_s
+        "runtime",          # SLAM wall-clock seconds (legacy and v2)
         "PeakReservedGB",   # legacy name; audited peak_reserved GiB; see memory_gib_metadata.json
         "max",
         "min",
@@ -175,13 +241,11 @@ if __name__ == "__main__":
                 gt = f"{base}/{dataset}/{run_id}/poses/groundtruth.txt"
                 est = f"{base}/{dataset}/{run_id}/poses/est_c2w_tum.txt"
                 # ATE_RMSE_path = f"{base}/{dataset}/{run_id}/eval/ATE.txt"
-                runtime_path = f"{base}/{dataset}/{run_id}/metric.txt"
-                gpu_path = f"{base}/{dataset}/{run_id}/metric.txt"
-                # print(gt, est, runtime_path, gpu_path)
+                run_dir = Path(base) / dataset / run_id
 
-                # rmse_v = parse_ATE(ATE_RMSE_path)
-                fps, wall_clock = parse_runtime_file(runtime_path)
-                peak_gb = parse_gpu_file(gpu_path)
+                # Old runs use metric.txt; newer runs use metrics.txt or performance.json.
+                # All report SLAM wall-clock seconds and peak CUDA reserved GiB.
+                fps, wall_clock, peak_gb = parse_run_performance(run_dir)
 
                 ate_stats = evaluate_ate_stats_like_cli(gt, est)
                 if ate_stats == "NA":
